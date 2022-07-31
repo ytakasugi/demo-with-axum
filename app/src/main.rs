@@ -1,17 +1,26 @@
+use std::net::SocketAddr;
+
 use axum::{
     routing::get,
     Router
 };
 
-#[tokio::main]
-async fn main() {
-    let app = Router::new().route(
-        "/",
-         get(|| async { "Hello Rust!" })
-    );
+mod util;
+mod model;
+mod api;
 
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+use api::get_api;
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+
+    let app = Router::new()
+        .route("/users", get(get_api::get_user));
+
+    axum::Server::bind(&addr)
         .serve(app.into_make_service())
-        .await
-        .unwrap();
+        .await?;
+
+    Ok(())
 }
