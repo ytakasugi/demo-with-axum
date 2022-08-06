@@ -1,7 +1,7 @@
 use std::net::SocketAddr;
 
 use axum::{
-    routing::get,
+    routing::{get, post, put, delete},
     Router
 };
 
@@ -9,14 +9,17 @@ mod util;
 mod model;
 mod api;
 
-use api::get_api;
+use api::{get_api, post_api, put_api, delete_api};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
 
     let app = Router::new()
-        .route("/users", get(get_api::get_user));
+        .route("/users", get(get_api::get_user))
+        .route("/users", post(post_api::new_user))
+        .route("/users/:user_id", put(put_api::logical_delete_user))
+        .route("/users/:user_id", delete(delete_api::delete_user));
 
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
