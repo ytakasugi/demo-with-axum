@@ -18,7 +18,7 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/users", get(get_api::get_user))
         .route("/users", post(post_api::new_user))
-        .route("/users/:user_id", put(put_api::logical_delete_user))
+        .route("/users/:user_id", put(put_api::refist_user_info))
         .route("/users/:user_id", delete(delete_api::delete_user));
 
     axum::Server::bind(&addr)

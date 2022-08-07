@@ -23,6 +23,7 @@
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"user_name": "test01", "e_mail": "test01@example.com"}' http://localhost:3000/users
-curl -X PUT http://localhost:3000/users/17
+curl -X PUT -H "Content-Type: application/json" -d '{"e_mail": "test01@example.com", "delete_flag": false}' http://localhost:3000/users/19
+curl -X PUT -H "Content-Type: application/json" -d '{"e_mail": null, "delete_flag": true}' http://localhost:3000/users/19
 curl -X DELETE http://localhost:3000/users/17
 ```

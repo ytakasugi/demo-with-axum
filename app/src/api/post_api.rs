@@ -27,21 +27,6 @@ pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<im
             panic!("FAILED TO CREATE NEW USER.")
         });
 
-    /*let query = sqlx::query_as::<_, User>(
-        r#"
-            INSERT INTO USERS(USER_NAME, E_MAIL)
-            VALUES ($1, $2)
-            RETURNING *
-        "#
-    )
-    .bind(&parameter.user_name)
-    .bind(&parameter.e_mail)
-    .fetch_one(&mut transaction)
-    .await
-    .unwrap_or_else(|_| {
-        panic!("FAILED TO CREATE NEW USER.")
-    });*/
-
     transaction
         .commit()
         .await

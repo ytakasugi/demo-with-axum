@@ -29,7 +29,7 @@ pub struct  NewUser {
 }
 
 #[derive(Serialize, Deserialize, sqlx::Type, sqlx::FromRow)]
-pub struct  LogicalDeleteUser {
-    pub user_id: i32,
-    pub delete_flag: bool,
+pub struct  RegistUser {
+    pub e_mail: Option<String>,
+    pub delete_flag: Option<bool>,
 }

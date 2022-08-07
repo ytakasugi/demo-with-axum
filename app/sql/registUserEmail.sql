@@ -1,7 +1,7 @@
 UPDATE 
   USERS
 SET
-  DELETE_FLAG = $1
+  E_MAIL = $1
   , UPDATED = $2
 WHERE
   USER_ID = $3
