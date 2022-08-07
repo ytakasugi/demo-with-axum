@@ -1,0 +1,8 @@
+UPDATE 
+  USERS
+SET
+  DELETE_FLAG = true
+  , UPDATED = $1
+WHERE
+  USER_ID = $2
+RETURNING *

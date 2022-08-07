@@ -15,7 +15,19 @@ pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<im
         e_mail: param.e_mail.to_string(),
     };
 
-    let query = sqlx::query_as::<_, User>(
+    let _ = sqlx::query_file_as!(
+            User, 
+            "sql/insertUser.sql", 
+            &parameter.user_name, 
+            &parameter.e_mail
+        )
+        .fetch_one(&mut transaction)
+        .await
+        .unwrap_or_else(|_| {
+            panic!("FAILED TO CREATE NEW USER.")
+        });
+
+    /*let query = sqlx::query_as::<_, User>(
         r#"
             INSERT INTO USERS(USER_NAME, E_MAIL)
             VALUES ($1, $2)
@@ -28,7 +40,7 @@ pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<im
     .await
     .unwrap_or_else(|_| {
         panic!("FAILED TO CREATE NEW USER.")
-    });
+    });*/
 
     transaction
         .commit()
@@ -37,5 +49,5 @@ pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<im
             panic!("FAILED TO COMMIT.")
         });
 
-    Ok(Json(format!("CREATE NEW USER: {}", query.user_id)))
+    Ok(Json(format!("CREATE NEW USER: {}", parameter.user_name)))
 }

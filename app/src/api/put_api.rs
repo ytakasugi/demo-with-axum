@@ -2,7 +2,7 @@ use axum::{extract, Json, response::{Result, IntoResponse}};
 use chrono::Utc;
 
 use crate::util::db;
-use crate::model::user::{User/*, LogicalDeleteUser*/};
+use crate::model::user::User;
 
 pub async fn logical_delete_user(extract::Path(param): extract::Path<i32>) -> Result<impl IntoResponse> {
     let mut transaction = db::init()
@@ -16,10 +16,21 @@ pub async fn logical_delete_user(extract::Path(param): extract::Path<i32>) -> Re
         delete_flag: param.delete_flag,
     };*/
     let user_id = param;
-    let flag = true;
     let now = Utc::now().naive_utc();
 
-    let query = sqlx::query_as::<_, User>(
+    let _ = sqlx::query_file_as!(
+        User, 
+        "sql/logicalDeleteUser.sql", 
+        now, 
+        user_id
+    )
+    .fetch_one(&mut transaction)
+    .await
+    .unwrap_or_else(|_| {
+        panic!("FAILED TO CREATE NEW USER.")
+    });
+
+    /*let _ = sqlx::query_as::<_, User>(
         r#"
             UPDATE 
               USERS
@@ -38,7 +49,7 @@ pub async fn logical_delete_user(extract::Path(param): extract::Path<i32>) -> Re
     .await
     .unwrap_or_else(|_| {
         panic!("FAILED TO UPDATE USER.")
-    });
+    });*/
 
     transaction
         .commit()
@@ -47,5 +58,5 @@ pub async fn logical_delete_user(extract::Path(param): extract::Path<i32>) -> Re
             panic!("FAILED TO COMMIT.")
         });
 
-    Ok(Json(format!("UPDATE USER: {}", query.user_id)))
+    Ok(Json(format!("UPDATE USER: USER_ID = {}", user_id)))
 } 
