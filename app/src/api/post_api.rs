@@ -5,7 +5,7 @@ use crate::model::user::{User, NewUser};
 use crate::model::task::{Task, NewTask};
 
 pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<impl IntoResponse> {
-    let mut transaction = db::init()
+    let mut transaction = db::get_connection_pool()
         .await
         .begin()
         .await
@@ -39,7 +39,7 @@ pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<im
 }
 
 pub async fn new_task(extract::Json(param): extract::Json<NewTask>) -> Result<impl IntoResponse> {
-    let mut transaction = db::init()
+    let mut transaction = db::get_connection_pool()
         .await
         .begin()
         .await
@@ -71,5 +71,5 @@ pub async fn new_task(extract::Json(param): extract::Json<NewTask>) -> Result<im
             panic!("FAILED TO COMMIT.")
         });
 
-        Ok(Json(format!("CREATE NEW USER: TASK_ID = {}", query.task_id)))
+        Ok(Json(format!("CREATE NEW TASK: TASK_ID = {}", query.task_id)))
 }

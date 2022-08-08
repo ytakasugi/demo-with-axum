@@ -18,6 +18,7 @@
 
 * [ndelvalle/rustapi](https://github.com/ndelvalle/rustapi)
 * [yuk1ty/stock-metrics](https://github.com/yuk1ty/stock-metrics)
+* [launchbadge/sqlx/examples](https://github.com/launchbadge/sqlx/tree/main/examples)
 
 ## 動作確認用
 
