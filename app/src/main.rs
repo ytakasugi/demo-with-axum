@@ -18,8 +18,10 @@ async fn main() -> anyhow::Result<()> {
     let app = Router::new()
         .route("/users", get(get_api::get_user))
         .route("/users", post(post_api::new_user))
-        .route("/users/:user_id", put(put_api::refist_user_info))
-        .route("/users/:user_id", delete(delete_api::delete_user));
+        .route("/users/:user_id", put(put_api::regist_user))
+        .route("/users/:user_id", delete(delete_api::delete_user))
+        .route("/users/tasks", get(get_api::get_user_task))
+        .route("/tasks", post(post_api::new_task));
 
     axum::Server::bind(&addr)
         .serve(app.into_make_service())

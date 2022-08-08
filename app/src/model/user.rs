@@ -31,5 +31,5 @@ pub struct  NewUser {
 #[derive(Serialize, Deserialize, sqlx::Type, sqlx::FromRow)]
 pub struct  RegistUser {
     pub e_mail: Option<String>,
-    pub delete_flag: Option<bool>,
+    pub delete_flag: bool,
 }

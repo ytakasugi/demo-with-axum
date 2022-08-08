@@ -2,6 +2,7 @@ use axum::{extract, response::{Result, IntoResponse}, Json};
 
 use crate::util::db;
 use crate::model::user::{User, NewUser};
+use crate::model::task::{Task, NewTask};
 
 pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<impl IntoResponse> {
     let mut transaction = db::init()
@@ -34,5 +35,41 @@ pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<im
             panic!("FAILED TO COMMIT.")
         });
 
-    Ok(Json(format!("CREATE NEW USER: {}", parameter.user_name)))
+    Ok(Json(format!("CREATE NEW USER: USER_NAME = {}", parameter.user_name)))
+}
+
+pub async fn new_task(extract::Json(param): extract::Json<NewTask>) -> Result<impl IntoResponse> {
+    let mut transaction = db::init()
+        .await
+        .begin()
+        .await
+        .unwrap();
+
+    let parameter = NewTask {
+        user_id: param.user_id,
+        content: param.content.to_string(),
+        dead_line: param.dead_line
+    };
+
+    let query = sqlx::query_file_as!(
+        Task, 
+        "sql/insertTask.sql", 
+        parameter.user_id,
+        &parameter.content, 
+        parameter.dead_line
+    )
+    .fetch_one(&mut transaction)
+    .await
+    .unwrap_or_else(|_| {
+        panic!("FAILED TO CREATE NEW TASK.")
+    });
+
+    transaction
+        .commit()
+        .await
+        .unwrap_or_else(|_| {
+            panic!("FAILED TO COMMIT.")
+        });
+
+        Ok(Json(format!("CREATE NEW USER: TASK_ID = {}", query.task_id)))
 }

@@ -1,9 +1,21 @@
-use axum::{extract, Json, response::{Result, IntoResponse}};
-use chrono::Utc;
+use axum::{
+    extract, 
+    Json, 
+    response::{
+        Result, 
+        IntoResponse
+    }
+};
 
-use crate::{util::db, model::user::{User, RegistUser}};
+use crate::{
+    util::db, 
+    model::user::{
+        User, 
+        RegistUser
+    }
+};
 
-pub async fn refist_user_info(extract::Path(user_id): extract::Path<i32>, extract::Json(param): extract::Json<RegistUser>) -> Result<impl IntoResponse> {
+pub async fn regist_user(extract::Path(user_id): extract::Path<i32>, extract::Json(param): extract::Json<RegistUser>) -> Result<impl IntoResponse> {
     let mut transaction = db::init()
         .await
         .begin()
@@ -11,7 +23,6 @@ pub async fn refist_user_info(extract::Path(user_id): extract::Path<i32>, extrac
         .unwrap();
 
     let user_id = user_id;
-    let now = Utc::now().naive_utc();
 
     let parameter = RegistUser {
         e_mail: param.e_mail,
@@ -23,30 +34,29 @@ pub async fn refist_user_info(extract::Path(user_id): extract::Path<i32>, extrac
             User,
             "sql/registUserEmail.sql",
             e_mail,
-            now,
             user_id
         )
         .fetch_one(&mut transaction)
         .await
-        .unwrap();
+        .unwrap_or_else(|_| {
+            panic!("FAILED TO UPDATE USER.")
+        });
     };
 
-    if let Some(delete_flag) = parameter.delete_flag {
+    // delete_flag == trueだった場合
+    if parameter.delete_flag {
         sqlx::query_file_as!(
-                User, 
-                "sql/logicalDeleteUser.sql", 
-                delete_flag,
-                now, 
-                user_id
-            )
-            .fetch_one(&mut transaction)
-            .await
-            .unwrap_or_else(|_| {
-                panic!("FAILED TO UPDATE USER.")
-            });
-    };
+            User, 
+            "sql/logicalDeleteUser.sql", 
+            user_id
+        )
+        .fetch_one(&mut transaction)
+        .await
+        .unwrap_or_else(|_| {
+            panic!("FAILED TO UPDATE USER.")
+        });
+    }
     
-
     transaction
         .commit()
         .await
