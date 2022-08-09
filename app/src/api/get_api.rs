@@ -5,7 +5,7 @@ use crate::model::user::SelectUser;
 use crate::model::user_task::SelectUserTask;
 
 pub async fn get_user() -> Result<impl IntoResponse> {
-    let pool = db::get_connection_pool().await;
+    let pool = db::get_connection().await;
 
     let users = sqlx::query_file_as!(
             SelectUser, 
@@ -19,7 +19,7 @@ pub async fn get_user() -> Result<impl IntoResponse> {
 }
 
 pub async fn get_user_task() -> Result<impl IntoResponse> {
-    let pool = db::get_connection_pool().await;
+    let pool = db::get_connection().await;
 
     let user_task = sqlx::query_file_as!(
             SelectUserTask, 

@@ -5,7 +5,7 @@ use crate::model::user::{User, NewUser};
 use crate::model::task::{Task, NewTask};
 
 pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<impl IntoResponse> {
-    let mut transaction = db::get_connection_pool()
+    let mut transaction = db::get_connection()
         .await
         .begin()
         .await
@@ -39,7 +39,7 @@ pub async fn new_user(extract::Json(param): extract::Json<NewUser>) -> Result<im
 }
 
 pub async fn new_task(extract::Json(param): extract::Json<NewTask>) -> Result<impl IntoResponse> {
-    let mut transaction = db::get_connection_pool()
+    let mut transaction = db::get_connection()
         .await
         .begin()
         .await

@@ -16,7 +16,7 @@ use crate::{
 };
 
 pub async fn regist_user(extract::Path(user_id): extract::Path<i32>, extract::Json(param): extract::Json<RegistUser>) -> Result<impl IntoResponse> {
-    let mut transaction = db::get_connection_pool()
+    let mut transaction = db::get_connection()
         .await
         .begin()
         .await

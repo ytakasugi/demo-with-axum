@@ -4,7 +4,7 @@ use crate::util::db;
 use crate::model::user::User;
 
 pub async fn delete_user(extract::Path(param): extract::Path<i32>) -> Result<impl IntoResponse> {
-    let mut transaction = db::get_connection_pool()
+    let mut transaction = db::get_connection()
         .await
         .begin()
         .await
